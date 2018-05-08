@@ -3,6 +3,27 @@
     <script src="../lib/jquery/dist/jquery.js"></script>
     <script src="../lib/underscore/underscore.js"></script>
     <script src="../lib/backbone/backbone.js"></script>
+    <style>
+    .votes {
+      display: inline-block;
+      padding: 10px;
+      border-radius: 6px;
+      background-color: #e7e7e7;
+      border: 1px solid #888888;
+      margin-right: 8px;
+      margin-bottom: 2px;
+    }
+    .comment {
+      display: inline-block;
+      padding: 10px;
+      border-radius: 6px;
+      background-color: #e7e7e7;
+      border: 1px solid #888888;
+    }
+    .container {
+      margin: 8px 0;
+    }
+    </style>
   </head>
   <body>
     <script>
@@ -26,15 +47,22 @@ var Comment = Backbone.Model.extend({
   initialize: function(message) {
     /* Set the initial values for `votes` to 0 and `message` to the message.
      * Remember to use setters when working with attributes! */
+     this.set('votes', 0)
+     this.set('message', message)
   },
   votes: function() {
     /* Return the votes attribute on this model.
      * Remember to use a getter when working with attributes! */
+    this.get('votes')
   },
-  upvote: function(){
+  upvote: function() {
     // Set the `votes` attribute to the current vote count plus one.
-  }
+    this.set('votes', this.get('votes') + 1)
+  },
   // Add a downvote function; don't forget the comma above.
+  downvote: function() {
+    this.set('votes', this.get('votes') - 1)
+  }
 });
 
 /* - Backbone VIEW ------------------------------------------------------------
@@ -82,8 +110,9 @@ var CommentView = Backbone.View.extend({
   render: function() {
     // As in step2, we define a template:
     var html = [
-      '<div>',
+      '<div class="container">',
         '<span class="votes">',
+          'VOTE: ',
           this.model.get('votes'),
         '</span>',
         '<span class="comment">',
@@ -122,9 +151,11 @@ var CommentView = Backbone.View.extend({
 /* Create a new comment model using our Comment class,
  * passing the first message as an argument: */
 var comment = new Comment('This is a message');
-
+console.log(comment)
 // Create a view, and associate it with this model:
 var commentView = new CommentView({ model: comment });
+
+// comment.upvote()
 
 /* Notice that we instantiate the view with an object {model: comment}.
  * This is called an options hash. With views, if we pass an object with
@@ -137,7 +168,8 @@ var commentView = new CommentView({ model: comment });
  */
 
 // Append the view to the page. This is why we returned html from `render`:
-// $('body').append(commentView.render());
+$('body').append(commentView.render());
+comment.upvote();
 
 /* The number of votes should be 0.
  * We set that as the initial default value in the comment model.
